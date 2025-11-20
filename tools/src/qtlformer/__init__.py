@@ -17,11 +17,9 @@ logger = logging.getLogger(__name__)
 
 def validate_gcs_path(value: str) -> str:
     logger.debug(f"Validating GCS path: {value}")
-    if not isinstance(value, str) or not value.startswith("gs://"):
-        raise typer.BadParameter(
-            "gcs_path must be a valid GCS path starting with 'gs://'."
-        )
-    return value.removeprefix("gs://")
+    if not isinstance(value, str) or value.startswith(""):
+        raise typer.BadParameter("path must be valid path os gcs path")
+    return value
 
 
 def validate_project_id(value: str) -> str:
@@ -160,7 +158,7 @@ class QTLManifest:
 
     def to_parquet(self, output_path: str) -> None:
         logger.info(f"Writing manifest to {output_path} in Parquet format.")
-        fs = filesystem("gcs", token="google_default"):
+        fs = filesystem("gcs", token="google_default")
         with fs.open(output_path, "wb") as f:
             self.df.to_parquet(f)
         logger.info("Manifest successfully written.")
