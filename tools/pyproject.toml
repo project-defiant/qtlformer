@@ -1,6 +1,6 @@
 [project]
 name = "qtlformer"
-version = "0.2.3"
+version = "0.2.4"
 description = "Tools to transform eQTL Catalogue credible sets to gentropy StudyLocus and StudyIndex"
 requires-python = ">=3.12,<3.13"
 dependencies = [
@@ -18,3 +18,10 @@ qtlformer = "qtlformer:cli"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/qtlformer"]
+
+[dependency-groups]
+dev = [
+    "mypy>=1.18.2",
+    "pytest>=9.0.1",
+    "ruff>=0.14.5",
+]

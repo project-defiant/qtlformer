@@ -1,0 +1,2 @@
+study_id	dataset_id	susie_cs_path	susie_lbf_path
+QTS000015	QTD000360	QTS000015/QTD000360/QTD000360.credible_sets.parquet	QTS000015/QTD000360/QTD000360.lbf_variable.parquet

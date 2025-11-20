@@ -48,9 +48,20 @@ def validate_name(name: str, pattern: str) -> str:
 
 @dataclass
 class QTLDataset:
+    """QTL Dataset representation.
+
+    This class represents a single QTL dataset within a study, including paths to
+    its associated SuSiE credible sets and lbf variable parquet files.
+
+    NOTE: The paths are relative to the base path of the dataset.
+    """
+
     id: str
+    """Identifier of the QTL dataset."""
     susie_cs_path: str
+    """Relative path to the SuSiE credible sets parquet file."""
     susie_lbf_path: str
+    """Relative path to the SuSiE lbf variable parquet file."""
 
     @staticmethod
     def _validate_name(name: str) -> str:
@@ -60,17 +71,28 @@ class QTLDataset:
     @classmethod
     def from_path(cls, path: str) -> QTLDataset | None:
         try:
+            # NOTE: Assuming path structure is .../{relative_base_path}/{study_id}/{dataset_id}
             dataset_id = cls._validate_name(path.split("/")[-1])
         except DatasetOrStudyNameError:
             return None
+
         susie_cs_path = f"{path}/{dataset_id}.credible_sets.parquet"
         susie_lbf_path = f"{path}/{dataset_id}.lbf_variable.parquet"
+        logger.info(
+            f"Checking existence of SuSiE files for dataset '{dataset_id}': "
+            f"CS path: {susie_cs_path}, LBF path: {susie_lbf_path}"
+        )
         fs = filesystem("local")
         if not fs.exists(susie_cs_path) or not fs.exists(susie_lbf_path):
             logger.warning(
                 f"Dataset '{dataset_id}' is missing required SuSiE files. Skipping."
             )
             return None
+
+        # Transform to relative paths to the input_path provided by the user
+        logger.info("Transforming SuSiE paths relative to INPUT-PATH")
+        susie_cs_path = "/".join(susie_cs_path.split("/")[-3:])
+        susie_lbf_path = "/".join(susie_lbf_path.split("/")[-3:])
         return cls(
             id=dataset_id,
             susie_cs_path=susie_cs_path,
@@ -159,7 +181,7 @@ class QTLManifest:
         logger.info(f"Writing manifest to {output_path} in Parquet format.")
         fs = filesystem("local")
         with fs.open(output_path, "wb") as f:
-            self.df.to_parquet(f)
+            self.df.to_csv(f, index=False, sep="\t", header=True)
         logger.info("Manifest successfully written.")
 
 
