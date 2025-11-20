@@ -20,6 +20,12 @@ workflow {
     intro()
     print(params)
     input_ch = channel.fromPath(params.input_dir)
-    buildManifest(input_ch)
+    manifest_ch = buildManifest(input_ch)
+    manifest_ch.view()
+    datasets = manifest_ch.splitCsv(sep: '\t', header: true)
+    datasets.view()
+
+
+
     workflow.onComplete { log.info("Pipeline complete!") }
 }
