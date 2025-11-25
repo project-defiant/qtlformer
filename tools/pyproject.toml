@@ -1,6 +1,6 @@
 [project]
 name = "qtlformer"
-version = "0.3.0"
+version = "0.3.2"
 description = "Tools to transform eQTL Catalogue credible sets to gentropy StudyLocus and StudyIndex"
 requires-python = ">=3.12,<3.13"
 dependencies = [
